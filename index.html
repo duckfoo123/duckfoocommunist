@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>덕푸덕푸 홈페이지</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #f1f1f1;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            padding: 20px;
+            box-shadow: 0 4px 2px -2px gray;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin: 0;
+            color: #ffeb3b;
+            text-transform: uppercase;
+        }
+
+        .language-selector {
+            margin-right: 20px;
+        }
+
+        .language-selector select {
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .button-container {
+            margin: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .button-container a, .button-container button {
+            text-decoration: none;
+            color: #000;
+            background-color: #ffeb3b;
+            padding: 20px 40px;
+            border-radius: 30px;
+            font-size: 1.5em;
+            transition: background-color 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .button-container a:hover, .button-container button:hover {
+            background-color: #fbc02d;
+        }
+
+        #time, #weather {
+            font-size: 2.5em;
+            margin-top: 50px;
+        }
+
+        #error-message {
+            font-size: 1.5em;
+            color: #ff6666;
+            margin-top: 50px;
+        }
+
+        footer {
+            margin-top: 100px;
+            font-size: 1.2em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 id="title">덕푸덕푸 홈페이지</h1>
+        <div class="language-selector">
+            <select id="languageSelect" onchange="changeLanguage()">
+                <option value="ko">한국어</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="button-container">
+            <a id="githubLink" href="https://github.com/duckfoo123" target="_blank">덕푸 깃허브</a>
+            <a id="youtubeLink" href="https://www.youtube.com/@%EB%8D%95%ED%91%B8s" target="_blank">덕푸 유튜브</a>
+        </div>
+        <div class="button-container">
+            <button onclick="showCurrentTime()">현재 시간</button>
+            <button onclick="triggerError()">오류</button>
+        </div>
+
+        <div id="time"></div>
+        <div id="weather">서울의 날씨 정보를 불러오는 중...</div>
+        <div id="error-message"></div>
+    </div>
+
+    <footer>
+        <p>404 - 페이지를 찾을 수 없습니다</p>
+    </footer>
+
+    <script>
+        function showCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('time').textContent = timeString;
+        }
+
+        function changeLanguage() {
+            const language = document.getElementById('languageSelect').value;
+            if (language === 'ko') {
+                document.getElementById('title').textContent = '덕푸덕푸 홈페이지';
+                document.getElementById('githubLink').textContent = '덕푸 깃허브';
+                document.getElementById('youtubeLink').textContent = '덕푸 유튜브';
+            } else if (language === 'en') {
+                document.getElementById('title').textContent = 'DuckfooDuckfoo Homepage';
+                document.getElementById('githubLink').textContent = 'Duckfoo GitHub';
+                document.getElementById('youtubeLink').textContent = 'Duckfoo YouTube';
+            }
+        }
+
+        function fetchWeather() {
+            const apiKey = 'YOUR_API_KEY'; // 여기에 OpenWeatherMap API 키를 입력하세요.
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid=${apiKey}&units=metric`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const temperature = data.main.temp;
+                    const weatherDescription = data.weather[0].description;
+                    const weatherString = `서울: ${temperature}°C, ${weatherDescription}`;
+                    document.getElementById('weather').textContent = weatherString;
+                })
+                .catch(error => {
+                    console.error('날씨 정보를 불러오는 중 오류 발생:', error);
+                    document.getElementById('weather').textContent = '날씨 정보를 불러올 수 없습니다.';
+                });
+        }
+
+        function triggerError() {
+            document.getElementById('error-message').textContent = '에러 발생! 페이지를 찾을 수 없습니다!';
+        }
+
+        window.onload = function() {
+            fetchWeather();
+            showCurrentTime();
+            setInterval(showCurrentTime, 1000);
+        };
+    </script>
+</body>
+</html>
